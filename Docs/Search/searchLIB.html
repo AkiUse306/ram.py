@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RAM.py Library Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<header class="navbar">
+    <div class="logo">RAM.py</div>
+    <nav>
+        <a href="../index.html">Home</a>
+        <a href="../docs.html">Docs</a>
+        <a href="../download.html">Download</a>
+        <a href="../examples.html">Examples</a>
+        <a href="../cli.html">CLI</a>
+        <a href="../api.html">API</a>
+        <a href="searchLIB.html">Python Library</a>
+    </nav>
+</header>
+<div class="app-window">
+    
+    <div class="content">
+        <!-- LOGIN SCREEN -->
+        <div id="loginScreen" class="login-screen">
+            <div class="welcome-box">
+                <h1>Welcome to RAM.py</h1>
+                <p>Enter your Package ID to access the library</p>
+                
+                <form id="authForm">
+                    <div class="form-group">
+                        <label for="packageId">Package ID (GUID):</label>
+                        <input 
+                            type="text" 
+                            id="packageId" 
+                            placeholder="550e8400-e29b-41d4-a716-446655440000"
+                            required
+                            autocomplete="off"
+                        />
+                    </div>
+                    <button type="submit" class="btn">Continue</button>
+                    <div id="authStatus" class="status" style="display:none;"></div>
+                </form>
+                
+                <div style="margin-top: 30px; text-align: left; border-top: 1px solid #e0e0e0; padding-top: 20px;">
+                    <p style="color: #666; font-size: 13px; margin-bottom: 10px;"><strong>Forgot your Package ID?</strong></p>
+                    <p style="color: #666; font-size: 12px;">Run this command in your terminal:</p>
+                    <div style="background: #f5f5f5; padding: 8px; margin-top: 8px; border-radius: 4px; font-family: monospace; font-size: 12px; word-break: break-all;">ramtools getpkg_id</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- LIBRARY SCREEN -->
+        <div id="libraryScreen" class="library-screen" style="display: none; padding: 20px;">
+            <div class="welcome-header" style="background: white; border: 1px solid #ccc; padding: 20px; border-radius: 4px; margin-bottom: 20px;">
+                <h1 style="color: #0078d4; margin-bottom: 10px;">Welcome to RAM.py Library</h1>
+                <p style="color: #666; font-size: 14px; margin: 5px 0;">Your Package ID:</p>
+                <div style="background: #f5f5f5; padding: 10px; border-radius: 4px; font-family: monospace; word-break: break-all; font-size: 12px;" id="displayPkgId"></div>
+            </div>
+            
+            <h2 style="margin: 30px 0 15px 0; color: #333; font-size: 18px; border-bottom: 2px solid #0078d4; padding-bottom: 10px;">📚 Python Examples Library (270 Files)</h2>
+            <p style="color: #666; font-size: 13px; margin-bottom: 20px;">Browse through organized Python examples with increasing complexity levels</p>
+            
+            <div id="examplesContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; margin-bottom: 30px;"></div>
+            
+            <button class="logout-btn" onclick="logout()" style="padding: 10px 20px; background: #d13438; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Logout</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Example categories and files
+    const exampleCategories = {
+        'Basics': {
+            icon: '📚',
+            examples: [
+                '0001_variables', '0002_strings', '0003_lists', '0004_dicts',
+                '0005_tuples', '0006_conditionals', '0007_loops', '0008_functions',
+                '0009_imports', '0010_comments'
+            ]
+        },
+        'Intermediate': {
+            icon: '⚙️',
+            examples: [
+                '0001_list_comprehension', '0002_lambda', '0003_map_filter',
+                '0004_decorators', '0005_generators', '0006_context_managers',
+                '0007_exceptions', '0008_file_io', '0009_json_handling', '0010_datetime'
+            ]
+        },
+        'Advanced': {
+            icon: '🔧',
+            examples: [
+                '0001_classes', '0002_inheritance', '0003_polymorphism',
+                '0004_metaclasses', '0005_async_await', '0006_threading',
+                '0007_multiprocessing', '0008_decorators_advanced', '0009_descriptors', '0010_properties'
+            ]
+        },
+        'Data_Science': {
+            icon: '📊',
+            examples: [
+                '0001_numpy_basics', '0002_pandas_dataframes', '0003_matplotlib_plotting',
+                '0004_data_analysis', '0005_statistics', '0006_machine_learning',
+                '0007_data_cleaning', '0008_data_visualization', '0009_time_series', '0010_correlation'
+            ]
+        },
+        'Web': {
+            icon: '🌐',
+            examples: [
+                '0001_requests', '0002_json_api', '0003_web_scraping',
+                '0004_regex', '0005_url_parsing', '0006_html_parsing',
+                '0007_cookies', '0008_sessions', '0009_authentication', '0010_encryption'
+            ]
+        },
+        'Performance': {
+            icon: '⚡',
+            examples: [
+                '0001_optimization', '0002_profiling', '0003_caching',
+                '0004_memory_management', '0005_gc_control', '0006_benchmarking',
+                '0007_vectorization', '0008_jit_compilation', '0009_c_extensions', '0010_parallel_computing'
+            ]
+        },
+        'Testing': {
+            icon: '✅',
+            examples: [
+                '0001_unittest_basic', '0002_pytest', '0003_mocking',
+                '0004_fixtures', '0005_coverage', '0006_integration_tests',
+                '0007_tdd', '0008_assertions', '0009_test_organization', '0010_ci_cd'
+            ]
+        },
+        'Design_Patterns': {
+            icon: '🎯',
+            examples: [
+                '0001_singleton', '0002_factory', '0003_observer',
+                '0004_strategy', '0005_adapter', '0006_builder',
+                '0007_facade', '0008_proxy', '0009_chain_of_responsibility', '0010_state'
+            ]
+        },
+        'Advanced_Concepts': {
+            icon: '🚀',
+            examples: [
+                '0001_metaprogramming', '0002_reflection', '0003_dynamic_imports',
+                '0004_monkey_patching', '0005_abc_interface', '0006_protocols',
+                '0007_type_hints', '0008_dataclasses', '0009_enums', '0010_slots'
+            ]
+        }
+    };
+    
+    // Valid package IDs for demo
+    const validPackageIds = [
+        '550e8400-e29b-41d4-a716-446655440000',
+        '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
+        '6ba7b811-9dad-11d1-80b4-00c04fd430c8'
+    ];
+    
+    // Generate examples display
+    function generateExamplesDisplay() {
+        const container = document.getElementById('examplesContainer');
+        container.innerHTML = '';
+        
+        for (const [category, data] of Object.entries(exampleCategories)) {
+            const card = document.createElement('div');
+            card.style.cssText = `
+                background: white;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                padding: 15px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            `;
+            
+            card.onmouseover = function() {
+                this.style.borderColor = '#0078d4';
+                this.style.boxShadow = '0 2px 8px rgba(0,120,212,0.2)';
+            };
+            card.onmouseout = function() {
+                this.style.borderColor = '#ccc';
+                this.style.boxShadow = 'none';
+            };
+            
+            const exampleCount = data.examples.length * 3; // 3 levels per example
+            
+            card.innerHTML = `
+                <div style="font-size: 24px; margin-bottom: 10px;">${data.icon}</div>
+                <h3 style="color: #0078d4; margin: 0 0 8px 0; font-size: 14px;">${category}</h3>
+                <p style="color: #666; font-size: 12px; margin: 0 0 10px 0;">
+                    ${data.examples.length} topics × 3 levels = <strong>${exampleCount} files</strong>
+                </p>
+                <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                    ${data.examples.slice(0, 5).map(ex => 
+                        `<span style="background: #f0f0f0; padding: 3px 8px; border-radius: 2px; font-size: 11px; color: #666;">${ex.split('_').slice(1).join(' ')}</span>`
+                    ).join('')}
+                    ${data.examples.length > 5 ? `<span style="background: #f0f0f0; padding: 3px 8px; border-radius: 2px; font-size: 11px; color: #666;">+${data.examples.length - 5} more</span>` : ''}
+                </div>
+            `;
+            
+            card.onclick = function() {
+                showCategoryDetails(category, data);
+            };
+            
+            container.appendChild(card);
+        }
+    }
+    
+    // Show category details
+    function showCategoryDetails(category, data) {
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        `;
+        
+        const content = document.createElement('div');
+        content.style.cssText = `
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 30px;
+        `;
+        
+        const filesHtml = data.examples.map(example => {
+            const name = example.split('_').slice(1).join(' ').replace(/^\d+_/, '');
+            return `
+                <div style="margin-bottom: 15px; padding: 10px; background: #f9f9f9; border-radius: 4px; border-left: 3px solid #0078d4;">
+                    <div style="font-weight: 600; color: #333; margin-bottom: 5px;">${name.toUpperCase()}</div>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <span style="background: #e7f3ff; color: #0078d4; padding: 3px 8px; border-radius: 2px; font-size: 11px; font-weight: 500;">Basic</span>
+                        <span style="background: #fff4e6; color: #f57c00; padding: 3px 8px; border-radius: 2px; font-size: 11px; font-weight: 500;">Intermediate</span>
+                        <span style="background: #f3e5f5; color: #7b1fa2; padding: 3px 8px; border-radius: 2px; font-size: 11px; font-weight: 500;">Advanced</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        content.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: #0078d4; margin: 0; font-size: 18px;">${data.icon} ${category}</h2>
+                <button onclick="this.closest('div').parentElement.parentElement.remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">×</button>
+            </div>
+            <p style="color: #666; font-size: 13px; margin-bottom: 20px;">
+                <strong>${data.examples.length} topics</strong> with 3 complexity levels each = <strong>${data.examples.length * 3} total files</strong>
+            </p>
+            <div style="border-top: 1px solid #e0e0e0; padding-top: 15px;">
+                ${filesHtml}
+            </div>
+        `;
+        
+        modal.appendChild(content);
+        modal.onclick = function(e) {
+            if (e.target === modal) modal.remove();
+        };
+        
+        document.body.appendChild(modal);
+    }
+    
+    // Handle authentication
+    document.getElementById('authForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const packageId = document.getElementById('packageId').value.trim();
+        const statusElement = document.getElementById('authStatus');
+        
+        // Validate GUID format
+        const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        
+        if (guidRegex.test(packageId) || validPackageIds.includes(packageId)) {
+            sessionStorage.setItem('authenticated', 'true');
+            sessionStorage.setItem('packageId', packageId);
+            
+            // Switch to library screen
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('libraryScreen').style.display = 'block';
+            document.getElementById('displayPkgId').textContent = packageId;
+            
+            // Generate examples display
+            generateExamplesDisplay();
+        } else {
+            statusElement.textContent = '❌ Invalid Package ID format. Must be a valid GUID.';
+            statusElement.className = 'status error';
+            statusElement.style.display = 'block';
+        }
+    });
+    
+    // Check if already authenticated
+    window.addEventListener('load', function() {
+        if (sessionStorage.getItem('authenticated') === 'true') {
+            const pkgId = sessionStorage.getItem('packageId');
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('libraryScreen').style.display = 'block';
+            document.getElementById('displayPkgId').textContent = pkgId;
+            generateExamplesDisplay();
+        }
+    });
+    
+    // Logout function
+    function logout() {
+        sessionStorage.removeItem('authenticated');
+        sessionStorage.removeItem('packageId');
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('libraryScreen').style.display = 'none';
+        document.getElementById('packageId').value = '';
+        document.getElementById('authStatus').style.display = 'none';
+    }
+</script>
+</body>
+</html>
