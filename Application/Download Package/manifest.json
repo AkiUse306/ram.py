@@ -1,0 +1,21 @@
+{
+  "name": "RAM.py",
+  "version": "1.0.0",
+  "description": "Modern Python Development Toolkit",
+  "installed_at": "2025-12-02T17:26:06.034257",
+  "modules": [
+    "ramtools",
+    "filetools",
+    "speed",
+    "debug",
+    "data",
+    "utils"
+  ],
+  "features": [
+    "Fast processing utilities",
+    "Cleaner file management",
+    "Built-in debugging helpers",
+    "RAM-efficient data tools",
+    "Seamless Library Integration"
+  ]
+}

@@ -1,0 +1,45 @@
+RAM.py Quick Start Guide
+========================
+
+Basic Usage:
+-----------
+from ramtools import *
+
+# Start RAM.py
+start()
+
+# Organize files
+organize("./Downloads")
+
+# Boost performance
+data = [1, 2, 3, 4, 5]
+result = superboost(data)
+
+# Debug your code
+log_info("Hello World")
+
+# Process data
+filtered = filter([1,2,3,4,5], lambda x: x > 2)
+
+
+Command Line Usage:
+-------------------
+ram --version
+ram start /path/to/project
+ram organize ./Downloads
+ram boost data.json
+ram getpkg_id
+
+
+Features:
+---------
+✓ Fast processing utilities
+✓ Cleaner file management
+✓ Built-in debugging helpers
+✓ RAM-efficient data tools
+✓ Seamless Library Integration
+
+
+Support:
+--------
+For more information, check the documentation.
