@@ -3,7 +3,7 @@
 RAM.py Package Installer
 Creates an installation package and welcome screen for RAM.py
 """
-
+#To install for mac run curl -fsSL https://github.com/AkiUse306/ram.py/blob/main/create_installer.py |bash
 import os
 import sys
 import shutil
