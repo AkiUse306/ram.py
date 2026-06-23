@@ -3,6 +3,7 @@
 # ======================================
 # RAM.py Installer
 # Version: 1.0.0
+#To install for mac run curl -fsSL https://github.com/AkiUse306/ram.py/blob/main/install.sh |bash
 # ======================================
 
 set -e
