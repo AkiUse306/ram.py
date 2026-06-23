@@ -28,7 +28,15 @@ if ($answer -ne "Y" -and $answer -ne "y") {
 
 # Directories
 
-$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+if ($MyInvocation.MyCommand.Path) {
+
+    $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+
+} else {
+
+    $ScriptDir = Get-Location
+
+}
 
 $InstallDir = Join-Path $HOME ".ramtools"
 
